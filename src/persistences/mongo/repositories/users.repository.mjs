@@ -16,6 +16,7 @@ const getByEmail = async (email) => {
 };
 
 const create = async (data) => {
+  // Directly create the user without checking existence here
   const user = await userModel.create(data);
   return user;
 };

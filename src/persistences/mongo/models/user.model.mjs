@@ -9,12 +9,13 @@ const usersSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
+    required: true,
   },
   password: String,
   age: Number,
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "premium"],
     default: "user",
   },
 });

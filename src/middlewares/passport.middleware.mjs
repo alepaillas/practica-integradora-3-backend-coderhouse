@@ -5,15 +5,16 @@ import customErrors from "../errors/customErrors.mjs";
 export const passportCall = (strategy) => {
   return (req = request, res = response, next) => {
     passport.authenticate(strategy, { session: false }, (error, user, info) => {
+      //console.log("Authentication info:", info);
       if (error) {
-        return next(error); // Forward error to errorHandler
+        return next(error);
       }
       if (!user) {
         return next(
           customErrors.unauthorizedError(
             info.message ? info.message : "Unauthorized",
           ),
-        ); // Forward error to errorHandler
+        );
       }
 
       req.user = user;
@@ -22,14 +23,16 @@ export const passportCall = (strategy) => {
   };
 };
 
-export const authorization = (role) => {
-  return (req = request, res = response, next) => {
-    if (!req.user) {
-      return next(customErrors.unauthorizedError("No autorizado")); // Forward error to errorHandler
+export const authorization = (roles) => {
+  return async (req = request, res = response, next) => {
+    try {
+      if (!req.user) throw customErrors.notFoundError("User not found");
+      const roleAuthorized = roles.includes(req.user.role);
+      if (!roleAuthorized)
+        throw customErrors.unauthorizedError("User not authorized");
+      next();
+    } catch (error) {
+      next(error);
     }
-    if (req.user.role !== role) {
-      return next(customErrors.forbiddenError("No tienes permiso")); // Forward error to errorHandler
-    }
-    next();
   };
 };

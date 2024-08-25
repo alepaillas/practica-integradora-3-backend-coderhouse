@@ -40,8 +40,19 @@ const updatePassword = async (req, res, next) => {
   }
 };
 
+const changeUserRole = async (req, res, next) => {
+  try {
+    const { uid } = req.params;
+    const response = await userServices.changeUserRole(uid);
+    res.status(200).json({ status: "ok", response });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createMockUsers, // Add the new function to the exported object
   generatePasswordResetToken,
   updatePassword,
+  changeUserRole,
 };

@@ -5,12 +5,22 @@ import usersRepository from "../persistences/mongo/repositories/users.repository
 import { createHash } from "../utils/bcrypt.mjs";
 import customErrors from "../errors/customErrors.mjs";
 
-const register = async (userData) => {
+/* const register = async (userData) => {
   const { email, first_name, last_name, age, password } = userData;
+
+  // Check if the user already exists by email
   const existingUser = await usersRepository.getByEmail(email);
+
+  // Log for debugging purposes
+  console.log("Checking user registration for email:", email);
+  console.log("Existing user:", existingUser);
+
+  // If the user already exists, throw an error
   if (existingUser) {
     throw customErrors.badRequestError("User already exists");
   }
+
+  // If no user exists, create a new user
   const newUser = {
     first_name,
     last_name,
@@ -18,8 +28,14 @@ const register = async (userData) => {
     age,
     password: createHash(password),
   };
+
   await usersRepository.create(newUser);
-};
+
+  // Return a confirmation or relevant data if needed
+  return {
+    message: "User registered successfully",
+  };
+}; */
 
 const login = async (user) => {
   const token = generateToken(user);
@@ -44,7 +60,6 @@ const logout = async (session) => {
 };
 
 export default {
-  register,
   login,
   getCurrentUser,
   loginGithub,

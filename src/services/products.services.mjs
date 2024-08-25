@@ -18,8 +18,12 @@ const getById = async (id) => {
   return product;
 };
 
-const create = async (data) => {
-  const product = await productsRepository.create(data);
+const create = async (data, user) => {
+  let productData = data;
+  if (user.role === "premium") {
+    productData = { ...data, owner: user._id };
+  }
+  const product = await productsRepository.create(productData);
   if (!product) throw customErrors.createError("Error creating product.");
   return product;
 };
@@ -49,7 +53,11 @@ const update = async (id, data) => {
   return product;
 };
 
-const deleteOne = async (id) => {
+const deleteOne = async (id, user) => {
+  const productData = await productsRepository.getById(id);
+  if (user.role === "premium" && product.owner !== user._id) {
+    throw customErrors.unauthorizedError("User not authorized");
+  }
   const deleted = await productsRepository.deleteOne(id);
   if (!deleted.deletedCount)
     throw customErrors.notFoundError(`Product with id: ${id} not found.`);

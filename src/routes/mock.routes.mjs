@@ -11,14 +11,14 @@ const router = Router();
 router.post(
   "/users",
   passportCall("jwt"),
-  authorization("admin"),
+  authorization(["admin"]),
   usersControllers.createMockUsers,
 );
 
 router.post(
   "/products",
   passportCall("jwt"),
-  authorization("admin"),
+  authorization(["admin"]),
   productsControllers.createMockProducts, // Add the new route
 );
 

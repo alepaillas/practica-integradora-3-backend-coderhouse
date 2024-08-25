@@ -61,7 +61,7 @@ const create = async (req, res, next) => {
         "Both 'title': 'string' and 'price': 'number' are required.",
       );
     }
-    const newProduct = await productsServices.create(product);
+    const newProduct = await productsServices.create(product, req.user);
     res.status(201).json({ status: "success", payload: newProduct });
   } catch (error) {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.code) {
@@ -78,7 +78,7 @@ const create = async (req, res, next) => {
 const deleteOne = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await productsServices.deleteOne(id);
+    await productsServices.deleteOne(id, req.user);
     res.status(200).json({ status: "success" });
   } catch (error) {
     next(error);

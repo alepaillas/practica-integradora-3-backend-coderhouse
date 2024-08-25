@@ -5,13 +5,14 @@ import jwt from "passport-jwt";
 import { createHash, isValidPassword } from "../utils/bcrypt.mjs";
 import envConfig from "./env.config.mjs";
 import userRepository from "../persistences/mongo/repositories/users.repository.mjs";
+import cartsRepository from "../persistences/mongo/repositories/carts.repository.mjs";
 
 const JWT_PRIVATE_KEY = envConfig.JWT_PRIVATE_KEY;
 const COOKIE_TOKEN = envConfig.COOKIE_TOKEN;
 const GITHUB_CLIENT_ID = envConfig.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = envConfig.GITHUB_CLIENT_SECRET;
 
-const localStrategy = local.Strategy;
+const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
 
@@ -24,28 +25,43 @@ const cookieExtractor = (req) => {
 };
 
 const initializePassport = () => {
+  // Esta función inicializa las estrategias que configuremos
+  // Para passport solo existen estas dos propiedades que puede recibir username y password
   passport.use(
     "register",
-    new localStrategy(
+    new LocalStrategy(
       { passReqToCallback: true, usernameField: "email" },
-      async (req, email, password, done) => {
-        const { first_name, last_name, age } = req.body;
+      /* 
+      "register" es el nombre de la estrategia que estamos creando.
+      passReqToCallback: true, nos permite acceder a la request en la función de autenticación.
+      usernameField: "email", nos permite definir el campo que usaremos como username de passport.
+      done es una función que debemos llamar cuando terminamos de procesar la autenticación.
+      Nota: passport recibe dos datos el username y el password, en caso de que no tengamos un campo username en nuestro formulario, podemos usar usernameField para definir el campo que usaremos como username.
+      */
+      async (req, username, password, done) => {
         try {
-          const user = await userRepository.getByEmail(email);
-          if (user) {
-            return done(null, false, { message: "User already exists" });
-          }
+          const { first_name, last_name, email, age, role } = req.body;
+
+          const user = await userRepository.getByEmail(username);
+          if (user)
+            return done(null, false, { message: "El usuario ya existe" });
+
+          const cart = await cartsRepository.create();
+
           const newUser = {
             first_name,
             last_name,
             email,
             age,
             password: createHash(password),
+            role,
+            cart: cart._id,
           };
-          const result = await userRepository.create(newUser);
-          return done(null, result);
+
+          const createUser = await userRepository.create(newUser);
+          return done(null, createUser);
         } catch (error) {
-          return done("Error al obtener el usuario: " + error);
+          return done(error);
         }
       },
     ),
@@ -53,7 +69,7 @@ const initializePassport = () => {
 
   passport.use(
     "login",
-    new localStrategy(
+    new LocalStrategy(
       { usernameField: "email", passReqToCallback: true },
       async (req, email, password, done) => {
         try {

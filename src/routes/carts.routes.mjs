@@ -19,7 +19,7 @@ router.get(
 router.get(
   "/:cid",
   passportCall("jwt"),
-  authorization("user"),
+  authorization(["user", "premium"]),
   cartsControllers.getById,
 );
 
@@ -35,7 +35,7 @@ router.post(
 router.post(
   "/:cid/product/:pid",
   passportCall("jwt"),
-  authorization("user"),
+  authorization(["user", "premium"]),
   cartsControllers.addProduct,
 );
 
@@ -43,7 +43,7 @@ router.post(
 router.delete(
   "/:cid",
   passportCall("jwt"),
-  authorization("user"),
+  authorization(["user", "premium"]),
   cartsControllers.clear,
 );
 
@@ -51,7 +51,7 @@ router.delete(
 router.delete(
   "/:cid/product/:pid",
   passportCall("jwt"),
-  authorization("user"),
+  authorization(["user", "premium"]),
   cartsControllers.deleteProduct,
 );
 
@@ -59,14 +59,14 @@ router.delete(
 router.put(
   "/:cid/product/:pid",
   passportCall("jwt"),
-  authorization("user"),
+  authorization(["user", "premium"]),
   cartsControllers.updateProductQuantity,
 );
 
 router.get(
   "/:cid/purchase",
   passportCall("jwt"),
-  authorization("user"),
+  authorization(["user", "premium"]),
   cartsControllers.purchaseCart,
 );
 

@@ -1,5 +1,6 @@
 import cartsRepository from "../persistences/mongo/repositories/carts.repository.mjs";
 import customErrors from "../errors/customErrors.mjs"; // Import custom error handling
+import productsRepository from "../persistences/mongo/repositories/products.repository.mjs";
 
 const getAll = async () => {
   const carts = await cartsRepository.getAll();
@@ -20,7 +21,13 @@ const create = async () => {
   return cart;
 };
 
-const addProduct = async (cid, pid) => {
+const addProduct = async (cid, pid, user) => {
+  const product = await productsRepository.getById(pid);
+
+  if (user.role === "premium" && product.owner === user._id) {
+    // Usuario premium no puede comprar sus propios productos
+    throw customErrors.unauthorizedError("User not Authorized");
+  }
   const updatedCart = await cartsRepository.addProduct(cid, pid);
   if (!updatedCart)
     throw customErrors.notFoundError(

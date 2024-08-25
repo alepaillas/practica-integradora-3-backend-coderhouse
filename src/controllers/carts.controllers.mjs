@@ -39,7 +39,7 @@ const addProduct = async (req, res, next) => {
   try {
     const cartId = req.params.cid;
     const productId = req.params.pid;
-    const cart = await cartsServices.addProduct(cartId, productId);
+    const cart = await cartsServices.addProduct(cartId, productId, req.user);
     res.status(201).json({ status: "success", payload: cart });
   } catch (error) {
     next(error);

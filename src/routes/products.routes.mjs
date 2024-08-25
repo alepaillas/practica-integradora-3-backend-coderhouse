@@ -14,21 +14,21 @@ router.get("/:id", productsControllers.getById);
 router.post(
   "/",
   passportCall("jwt"),
-  authorization("admin"),
+  authorization(["admin", "premium"]),
   productsControllers.create,
 );
 
 router.put(
   "/:id",
   passportCall("jwt"),
-  authorization("admin"),
+  authorization(["admin", "premium"]),
   productsControllers.update,
 );
 
 router.delete(
   "/:id",
   passportCall("jwt"),
-  authorization("admin"),
+  authorization(["admin", "premium"]),
   productsControllers.deleteOne,
 );
 

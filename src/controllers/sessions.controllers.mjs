@@ -3,14 +3,12 @@ import envConfig from "../config/env.config.mjs";
 
 const COOKIE_TOKEN = envConfig.COOKIE_TOKEN;
 
-const register = async (req, res, next) => {
+const register = async (req, res) => {
   try {
-    await sessionServices.register(req.body);
-    res
-      .status(201)
-      .json({ status: "success", msg: "User created successfully." });
+    res.status(201).json({ status: "success", msg: "Usuario Creado" });
   } catch (error) {
-    next(error);
+    console.log(error);
+    res.status(500).json({ status: "Error", msg: "Internal Server Error" });
   }
 };
 

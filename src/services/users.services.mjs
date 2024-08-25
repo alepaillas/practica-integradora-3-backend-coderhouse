@@ -83,6 +83,13 @@ const updatePassword = async (email, newPassword) => {
   await usersRepository.update(userId, { password: hashedPassword });
 };
 
+const changeUserRole = async (uid) => {
+  const user = await usersRepository.getById(uid);
+  if (!user) throw customErrors.notFoundError("User not found");
+  const userRole = user.role === "premium" ? "user" : "premium";
+  return await usersRepository.update(uid, { role: userRole });
+};
+
 export default {
   getByEmail,
   createUser,
@@ -90,4 +97,5 @@ export default {
   generatePasswordResetToken,
   verifyPasswordResetToken,
   updatePassword,
+  changeUserRole,
 };
